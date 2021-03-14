@@ -2,12 +2,17 @@ import React, { useMemo } from 'react'
 import { useFilters, useGlobalFilter, useSortBy, useTable } from 'react-table'
 import MOCK_DATA from './MOCK_DATA.json'
 import { COLUMNS, /** GROUPED_COLUMNS */ } from './columns'
-import './table.css'
 import { GlobalFilter } from './GlobalFilter'
+import './table.css'
+import { ColumnFilter } from './ColumnFilter'
 
 export const FilteringTable = () => {
   const columns = useMemo(() => COLUMNS, [])
   const data = useMemo(() => MOCK_DATA, [])
+
+  const defaultColumn = useMemo(() => ({
+    Filter: ColumnFilter
+  }), [])
 
   const {
     getTableProps,
@@ -21,6 +26,7 @@ export const FilteringTable = () => {
   } = useTable({
     columns,
     data,
+    defaultColumn
   }, useFilters, useGlobalFilter, useSortBy)
 
   const { globalFilter } = state
