@@ -11,7 +11,7 @@ export const FromParamsTable = () => {
   const data = useMemo(() => MOCK_DATA, [])
 
   const [pageParam = 0, setPageParam] = useQueryParam('page', NumberParam);
-  const [sortParam, setSortParam] = useQueryParam('sort', StringParam);
+  const [sortParam = '', setSortParam] = useQueryParam('sort', StringParam);
 
   const {
     getTableProps,
@@ -78,8 +78,8 @@ export const FromParamsTable = () => {
                       <span>
                         {
                           isSorted
-                            ? (isSortedDesc ? ' 🔽' : ' 🔼')
-                            : ''
+                          ? (isSortedDesc ? <strong> &#10514;</strong> : <strong> &#10515;</strong>)
+                          : <strong> &#8693;</strong>
                         }
                       </span>
                     </th>
@@ -115,15 +115,37 @@ export const FromParamsTable = () => {
       </table>
       <div className="pagination">
 
-        <span>
+        <span className="summary">
           Page {''}
           <strong>
             {pageIndex + 1} of {pageOptions.length}
           </strong>
         </span>
 
-        <button disabled={!canPreviousPage} type="button" onClick={previousPage}>Previous</button>
-        <button disabled={!canNextPage} type="button" onClick={nextPage}>Next</button>
+        <button 
+          disabled={!canPreviousPage} 
+          type="button" 
+          onClick={() => gotoPage(0)}>
+            &laquo;
+        </button>
+        <button 
+          disabled={!canPreviousPage} 
+          type="button" 
+          onClick={previousPage}>
+            &lsaquo;
+        </button>
+        <button 
+          disabled={!canNextPage} 
+          type="button" 
+          onClick={nextPage}>
+            &rsaquo;
+        </button>
+        <button 
+          disabled={!canNextPage} 
+          type="button" 
+          onClick={() => gotoPage(pageOptions.length -1 )}>
+            &raquo;
+        </button>
       </div>
     </>
   )

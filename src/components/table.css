@@ -24,15 +24,21 @@ table th, tfoot td {
 }
 
 .pagination button {
-  padding: 1em;
-  margin: 10px;
-  width: 100px;
+  margin: 10px 2px;
+  padding: 8px;
+  width: 50px;
   outline: none;
-  border: none;
-  background-color: darkcyan;
-  color: white;
+  border: 3px darkcyan solid;
+  border-radius: 25%;
+  color: darkcyan;
   font-weight: 600;
   transition: all 0.2s;
+  font-size: 1.2em;
+}
+
+.pagination .summary {
+  margin-right: 10px;
+  color: rgb(1, 88, 88);
 }
 
 .pagination button:hover {
@@ -43,6 +49,7 @@ table th, tfoot td {
 
 .pagination button:disabled {
   cursor: not-allowed;
-  background-color: rgb(156, 156, 156);
+  border-color: rgb(197, 197, 197);
+  background-color: rgb(197, 197, 197);
   color: rgb(25, 41, 41);
 }
