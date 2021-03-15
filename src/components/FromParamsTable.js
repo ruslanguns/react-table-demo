@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
-import { usePagination, useTable } from 'react-table'
-import { useQueryParam, NumberParam } from "use-query-params";
+import { usePagination, useSortBy, useTable } from 'react-table'
+import { useQueryParam, NumberParam, StringParam } from "use-query-params";
 import MOCK_DATA from './MOCK_DATA.json'
 import { COLUMNS } from './columns'
 import './table.css'
@@ -9,7 +9,9 @@ export const FromParamsTable = () => {
   
   const columns = useMemo(() => COLUMNS, [])
   const data = useMemo(() => MOCK_DATA, [])
-  const [currentPage = 0, setCurrentPage] = useQueryParam('page', NumberParam);
+
+  const [ pageParam = 0, setPageParam ] = useQueryParam('page', NumberParam);
+  const [ sortParam, setSortParam ] = useQueryParam('sort', StringParam);
 
   const {
     getTableProps,
@@ -23,23 +25,40 @@ export const FromParamsTable = () => {
     canNextPage,
     canPreviousPage,
     pageOptions,
-    state,
+    state: { pageIndex, sortBy }
   } = useTable({
     columns,
     data,
-    initialState: { pageIndex: !isNaN(currentPage) ? currentPage - 1 : 0 }
-  }, usePagination)
+    initialState: { 
+      pageIndex: (!isNaN(pageParam) ? pageParam - 1 : 0),
+      sortBy: [{
+        id: ((sortParam.charAt(0) === '-') ? sortParam.substring(1) : sortParam ),
+        desc: sortParam.charAt(0) === '-' }]
+    },
+    manualSorting: false,
+    manualPagination: false
+  },
+    useSortBy,
+    usePagination
+  )
 
-  const { pageIndex } = state
-
+  // Handling sorting state
   useEffect(() => {
-    if(currentPage === 0 || isNaN(currentPage)) {
+    if(sortBy.length) {
+      const { id, desc } = sortBy[0]
+      setSortParam(`${desc ? '-' : ''}${id}`)
+    } else {
+      setSortParam('')
+    }
+  }, [sortBy, setSortParam, gotoPage])
+
+  // Handling page state
+  useEffect(() => {
+    if(pageParam === 0 || isNaN(pageParam)) {
       gotoPage(0)
     }
-    setCurrentPage(pageIndex+1)
-
-  }, [pageIndex, setCurrentPage, currentPage, gotoPage])
-
+    setPageParam(pageIndex+1)
+  }, [pageIndex, setPageParam, pageParam, gotoPage])
 
   return (
     <>
@@ -50,11 +69,18 @@ export const FromParamsTable = () => {
             headerGroups.map(({ getHeaderGroupProps, headers }) => (
               <tr {...getHeaderGroupProps()}>
                 {
-                  headers.map(({ getHeaderProps, render }) => (
-                    <th {...getHeaderProps()}>
+                  headers.map(({ getHeaderProps, render, getSortByToggleProps, isSorted, isSortedDesc }) => (
+                    <th {...getHeaderProps(getSortByToggleProps())}>
                       {
                         render('Header')
                       }
+                      <span>
+                        {
+                          isSorted
+                            ? (isSortedDesc ? ' 🔽' : ' 🔼')
+                            : ''
+                        }
+                      </span>
                     </th>
                   ))
                 }
