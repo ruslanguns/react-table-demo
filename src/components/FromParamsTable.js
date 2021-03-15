@@ -10,7 +10,9 @@ export const FromParamsTable = () => {
   const columns = useMemo(() => COLUMNS, [])
   const data = useMemo(() => MOCK_DATA, [])
 
+  const defaultPageSize = 10
   const [pageParam = 0, setPageParam] = useQueryParam('page', NumberParam);
+  const [sizeParam = defaultPageSize, setSizeParam] = useQueryParam('size', NumberParam);
   const [sortParam = '', setSortParam] = useQueryParam('sort', StringParam);
 
   const {
@@ -25,11 +27,13 @@ export const FromParamsTable = () => {
     canNextPage,
     canPreviousPage,
     pageOptions,
-    state: { pageIndex, sortBy }
+    state: { pageIndex, sortBy },
+    setPageSize
   } = useTable({
     columns,
     data,
     initialState: {
+      pageSize: (!isNaN(sizeParam) ? sizeParam : defaultPageSize),
       pageIndex: (!isNaN(pageParam) ? pageParam - 1 : 0),
       sortBy: [{
         id: ((sortParam.charAt(0) === '-') ? sortParam.substring(1) : sortParam),
@@ -42,6 +46,18 @@ export const FromParamsTable = () => {
     useSortBy,
     usePagination
   )
+
+  // Handling page size state
+  useEffect(() => {
+    if (sizeParam > pageOptions.length) {
+      setSizeParam(pageOptions.length)
+      setPageSize(pageOptions.length)
+    }
+    if(sizeParam <= 0 || isNaN(sizeParam)) {
+      setSizeParam(defaultPageSize)
+      setPageSize(defaultPageSize)
+    }
+  }, [setSizeParam, sizeParam, pageOptions, setPageSize])
 
   // Handling sorting state
   useEffect(() => {

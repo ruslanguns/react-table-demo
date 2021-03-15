@@ -14,7 +14,7 @@ One of the inspiration behind this, is the ability to create a table by fetching
 - [x] Column filter sample
 - [x] Using Sort Params sample 
 - [x] Using Page Params sample 
-- [ ] Using PerPage Params sample 
+- [x] Using PageSize Params sample 
 - [ ] Using GlobalFilter Params sample
 - [ ] Using data with fetching an API (eg. [rawg](https://api.rawg.io/docs/))
 - [ ] Create a landing page for showing all samples and snippets
