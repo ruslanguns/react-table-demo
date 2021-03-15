@@ -6,12 +6,12 @@ import { COLUMNS } from './columns'
 import './table.css'
 
 export const FromParamsTable = () => {
-  
+
   const columns = useMemo(() => COLUMNS, [])
   const data = useMemo(() => MOCK_DATA, [])
 
-  const [ pageParam = 0, setPageParam ] = useQueryParam('page', NumberParam);
-  const [ sortParam, setSortParam ] = useQueryParam('sort', StringParam);
+  const [pageParam = 0, setPageParam] = useQueryParam('page', NumberParam);
+  const [sortParam, setSortParam] = useQueryParam('sort', StringParam);
 
   const {
     getTableProps,
@@ -29,11 +29,12 @@ export const FromParamsTable = () => {
   } = useTable({
     columns,
     data,
-    initialState: { 
+    initialState: {
       pageIndex: (!isNaN(pageParam) ? pageParam - 1 : 0),
       sortBy: [{
-        id: ((sortParam.charAt(0) === '-') ? sortParam.substring(1) : sortParam ),
-        desc: sortParam.charAt(0) === '-' }]
+        id: ((sortParam.charAt(0) === '-') ? sortParam.substring(1) : sortParam),
+        desc: sortParam.charAt(0) === '-'
+      }]
     },
     manualSorting: false,
     manualPagination: false
@@ -44,7 +45,7 @@ export const FromParamsTable = () => {
 
   // Handling sorting state
   useEffect(() => {
-    if(sortBy.length) {
+    if (sortBy.length) {
       const { id, desc } = sortBy[0]
       setSortParam(`${desc ? '-' : ''}${id}`)
     } else {
@@ -54,11 +55,11 @@ export const FromParamsTable = () => {
 
   // Handling page state
   useEffect(() => {
-    if(pageParam === 0 || isNaN(pageParam)) {
+    if ((pageParam <= 0) || isNaN(pageParam) || (pageParam > pageOptions.length)) {
       gotoPage(0)
     }
-    setPageParam(pageIndex+1)
-  }, [pageIndex, setPageParam, pageParam, gotoPage])
+    setPageParam(pageIndex + 1)
+  }, [pageIndex, setPageParam, pageParam, gotoPage, pageOptions])
 
   return (
     <>
@@ -117,7 +118,7 @@ export const FromParamsTable = () => {
         <span>
           Page {''}
           <strong>
-          { pageIndex + 1 } of { pageOptions.length }
+            {pageIndex + 1} of {pageOptions.length}
           </strong>
         </span>
 
