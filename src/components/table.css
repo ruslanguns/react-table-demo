@@ -20,3 +20,27 @@ table th, tfoot td {
   background-color: #4CAF50;
   color: white;
 }
+
+.pagination button {
+  padding: 1em;
+  margin: 10px;
+  width: 100px;
+  outline: none;
+  border: none;
+  background-color: darkcyan;
+  color: white;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.pagination button:hover {
+  cursor: pointer;
+  background-color: rgb(76, 179, 179);
+  color: rgb(1, 88, 88);
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  background-color: rgb(156, 156, 156);
+  color: rgb(25, 41, 41);
+}
