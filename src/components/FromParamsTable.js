@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { usePagination, useSortBy, useTable } from 'react-table'
-import { useQueryParam, NumberParam, StringParam } from "use-query-params";
+import { NumberParam, StringParam, useQueryParams, withDefault } from "use-query-params";
 import MOCK_DATA from './MOCK_DATA.json'
 import { COLUMNS } from './columns'
 import './table.css'
@@ -11,9 +11,12 @@ export const FromParamsTable = () => {
   const data = useMemo(() => MOCK_DATA, [])
 
   const defaultPageSize = 10
-  const [pageParam = 0, setPageParam] = useQueryParam('page', NumberParam);
-  const [sizeParam = defaultPageSize, setSizeParam] = useQueryParam('size', NumberParam);
-  const [sortParam = '', setSortParam] = useQueryParam('sort', StringParam);
+
+  const [query, setQuery] = useQueryParams({
+    page: withDefault(NumberParam, 0),
+    size: withDefault(NumberParam, defaultPageSize),
+    sort: withDefault(StringParam, ''),
+  })
 
   const {
     getTableProps,
@@ -33,11 +36,11 @@ export const FromParamsTable = () => {
     columns,
     data,
     initialState: {
-      pageSize: (!isNaN(sizeParam) ? sizeParam : defaultPageSize),
-      pageIndex: (!isNaN(pageParam) ? pageParam - 1 : 0),
+      pageSize: (!isNaN(query.size) ? query.size : defaultPageSize),
+      pageIndex: (!isNaN(query.page) ? query.page - 1 : 0),
       sortBy: [{
-        id: ((sortParam.charAt(0) === '-') ? sortParam.substring(1) : sortParam),
-        desc: sortParam.charAt(0) === '-'
+        id: ((query.sort.charAt(0) === '-') ? query.sort.substring(1) : query.sort),
+        desc: query.sort.charAt(0) === '-'
       }]
     },
     manualSorting: false,
@@ -49,33 +52,48 @@ export const FromParamsTable = () => {
 
   // Handling page size state
   useEffect(() => {
-    if (sizeParam > pageOptions.length) {
-      setSizeParam(pageOptions.length)
+    if (query.size > pageOptions.length) {
       setPageSize(pageOptions.length)
+      setQuery({
+        ...query,
+        size: pageOptions.length
+      })
     }
-    if(sizeParam <= 0 || isNaN(sizeParam)) {
-      setSizeParam(defaultPageSize)
+    if(query.size <= 0 || isNaN(query.size)) {
       setPageSize(defaultPageSize)
+      setQuery({
+        ...query,
+        size: defaultPageSize
+      })
     }
-  }, [setSizeParam, sizeParam, pageOptions, setPageSize])
+  }, [setQuery, query, pageOptions, setPageSize, defaultPageSize])
 
   // Handling sorting state
   useEffect(() => {
     if (sortBy.length) {
       const { id, desc } = sortBy[0]
-      setSortParam(`${desc ? '-' : ''}${id}`)
+      setQuery({
+        ...query,
+        sort: `${desc ? '-' : ''}${id}`
+      })
     } else {
-      setSortParam('')
+      setQuery({
+        ...query,
+        sort: ''
+      })
     }
-  }, [sortBy, setSortParam, gotoPage])
+  }, [sortBy, gotoPage, setQuery, query])
 
   // Handling page state
   useEffect(() => {
-    if ((pageParam <= 0) || isNaN(pageParam) || (pageParam > pageOptions.length)) {
+    if ((query.page <= 0) || isNaN(query.page) || (query.page > pageOptions.length)) {
       gotoPage(0)
     }
-    setPageParam(pageIndex + 1)
-  }, [pageIndex, setPageParam, pageParam, gotoPage, pageOptions])
+    setQuery({
+      ...query,
+      page: pageIndex + 1
+    })
+  }, [pageIndex, setQuery, query, gotoPage, pageOptions])
 
   return (
     <>
